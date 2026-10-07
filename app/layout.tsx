@@ -35,6 +35,8 @@ const delafield = Mrs_Saint_Delafield({
   subsets: ["latin"],
 });
 
+const isProduction = process.env.VERCEL_ENV === "production";
+
 export const metadata: Metadata = {
   metadataBase: new URL("https://korakaagaz.co"),
   title: "Kora Kaagaz — A creative studio for ideas in any form",
@@ -49,6 +51,7 @@ export const metadata: Metadata = {
     images: ["/og-image.png"],
   },
   twitter: { card: "summary_large_image" },
+  robots: isProduction ? undefined : { index: false, follow: false },
 };
 
 export const viewport: Viewport = {
