@@ -53,11 +53,25 @@ To change content, decode the template JSON, edit it, and encode it back. To add
 WebP into `public/broadsheet/img/` and add an entry to the template's `ASSETS` map (path, size and
 a tiny `lq` preview).
 
+## Enquiries
+
+The Reply form (Classifieds, P. 09) posts JSON to `app/api/enquiry/route.ts`, which validates it
+and emails it to the studio inbox through Google Workspace SMTP (`smtp.gmail.com`), with the
+visitor's address as Reply-To. If sending fails, the form shows an error with the studio address.
+The Back page's Contact column also links `team@korakaagaz.co`.
+
 ## Environment variables
 
-None are required. `VERCEL_ENV` is set by Vercel: only `production` deployments are indexable;
-every other environment (previews, `dev`) serves a `disallow` robots.txt and an
-`X-Robots-Tag: noindex` header.
+| Variable     | Required | Notes                                                                  |
+| ------------ | -------- | ---------------------------------------------------------------------- |
+| `SMTP_USER`  | Yes      | Workspace account that sends enquiries, `team@korakaagaz.co`           |
+| `SMTP_PASS`  | Yes      | A Google **app password** for `SMTP_USER` (needs 2-Step Verification)  |
+| `ENQUIRY_TO` | No       | Deliver to a different inbox; defaults to `SMTP_USER`                  |
+
+Without `SMTP_USER`/`SMTP_PASS` the form answers "Enquiries are not set up yet."
+
+`VERCEL_ENV` is set by Vercel: only `production` deployments are indexable; every other environment
+(previews, `dev`) serves a `disallow` robots.txt and an `X-Robots-Tag: noindex` header.
 
 ## Branches & deployment
 
