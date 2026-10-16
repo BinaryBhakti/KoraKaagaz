@@ -1,6 +1,11 @@
 # Kora Kaagaz — web
 
-Marketing site for Kora Kaagaz, built with Next.js 16 (App Router), React 19 and Tailwind CSS 4.
+Marketing site for Kora Kaagaz. The site is **The Broadsheet**: the studio portfolio set as a
+newspaper, with a 3D ink roller that prints the front page as you scroll. It is a static bundle
+exported from Claude Design, served at `/` by a thin Next.js 16 app that also handles `robots.txt`,
+`sitemap.xml`, 404s and preview noindex.
+
+The previous design (a Next.js/React component site) is preserved at git tag **`v1-classic`**.
 
 ## Requirements
 
@@ -12,7 +17,6 @@ Marketing site for Kora Kaagaz, built with Next.js 16 (App Router), React 19 and
 ```bash
 corepack enable
 pnpm install
-cp .env.example .env.local   # then fill in values
 pnpm dev                     # http://localhost:3000
 ```
 
@@ -24,20 +28,36 @@ pnpm dev                     # http://localhost:3000
 | `pnpm lint`      | ESLint                       |
 | `pnpm typecheck` | TypeScript, no emit          |
 
+## How the site is served
+
+- `public/broadsheet/index.html`: the whole page (about 1.3 MB: fonts, runtime, React loader and
+  the front page's photos, inlined).
+- `public/broadsheet/img/`: 78 WebP portfolio images, lazy-loaded with blurred previews.
+- `next.config.ts` rewrites `/` → `/broadsheet/index.html` and `/img/*` → `/broadsheet/img/*`
+  (the page requests its images by the relative path `img/<name>.webp`).
+
+To preview the bundle without Next, serve `public/broadsheet/` with any static server, e.g.
+`python3 -m http.server 8765 --directory public/broadsheet`.
+
+### Editing content
+
+`index.html` unpacks two JSON blocks at load time:
+
+- `<script type="__bundler/manifest">` maps each asset uuid to base64 data (fonts, runtime, React,
+  front-page photos).
+- `<script type="__bundler/template">` holds the page as a JSON string: markup with `{{ }}`
+  bindings and a `Component` class with the data (`SITES`, `DECKS`, `CAMPAIGNS`, `MERCH`,
+  `GALLERIES`, `WORK`) and the scroll and lightbox logic.
+
+To change content, decode the template JSON, edit it, and encode it back. To add an image, drop a
+WebP into `public/broadsheet/img/` and add an entry to the template's `ASSETS` map (path, size and
+a tiny `lq` preview).
+
 ## Environment variables
 
-All variables are `NEXT_PUBLIC_*`, so they are **inlined at build time** — after changing one in
-Vercel, redeploy. See `.env.example` for the full list; they are read in `lib/config.ts`.
-
-| Variable                                   | Required | Notes                                                            |
-| ------------------------------------------ | -------- | ---------------------------------------------------------------- |
-| `NEXT_PUBLIC_STUDIO_EMAIL`                 | Yes      | Contact form falls back to a `mailto:` to this address           |
-| `NEXT_PUBLIC_FORM_ENDPOINT`                | No       | If set, the contact form POSTs JSON here instead                 |
-| `NEXT_PUBLIC_INSTAGRAM_URL` / `_LINKEDIN_URL` / `_BEHANCE_URL` | No | Social links                                     |
-| `NEXT_PUBLIC_HERO_FIELD`, `NEXT_PUBLIC_CURSOR_STYLE`, `NEXT_PUBLIC_CUSTOM_CURSOR`, `NEXT_PUBLIC_INTRO`, `NEXT_PUBLIC_MOTION`, `NEXT_PUBLIC_SCRIPT_ACCENT` | No | Visual toggles; defaults in `lib/config.ts` |
-
-`VERCEL_ENV` is set by Vercel. Only `production` deployments are indexable; every other environment
-(previews, `dev`) serves a `disallow` robots.txt and `noindex` meta tag.
+None are required. `VERCEL_ENV` is set by Vercel: only `production` deployments are indexable;
+every other environment (previews, `dev`) serves a `disallow` robots.txt and an
+`X-Robots-Tag: noindex` header.
 
 ## Branches & deployment
 
