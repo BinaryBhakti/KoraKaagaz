@@ -7,9 +7,9 @@ const isProduction = process.env.VERCEL_ENV === "production";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://korakaagaz.co"),
-  title: "Kora Kaagaz — A creative studio for ideas in any form",
+  title: "Kora Kaagaz — Independent Creative Studio, India",
   description:
-    "Kora Kaagaz is an independent creative studio in India working across brand, digital, motion and studio production. Nothing fixed. Everything possible.",
+    "Kora Kaagaz is an independent creative studio in India working across brand identity, digital experiences, motion, photography and visual production. Rooted, not nostalgic.",
   robots: isProduction ? undefined : { index: false, follow: false },
 };
 
@@ -23,7 +23,7 @@ const jsonLd = {
   name: "Kora Kaagaz",
   url: "https://korakaagaz.co",
   slogan: "Nothing fixed. Everything possible.",
-  description: "An independent creative studio for ideas in any form.",
+  description: "An independent creative studio in India. An open world for ideas.",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
