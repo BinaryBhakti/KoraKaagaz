@@ -25,9 +25,9 @@ function parse(body: unknown): Enquiry | string {
     if (value.length > MAX_LENGTH[key]) return "One of the fields is too long.";
     out[key] = value;
   }
-  if (!out.name) return "Add your name.";
-  if (!/^\S+@\S+\.\S+$/.test(out.email)) return "Add an email we can reply to.";
-  if (!out.message) return "A sentence or two is enough.";
+  if (!out.name) return "Please add your name.";
+  if (!/^\S+@\S+\.\S+$/.test(out.email)) return "Please enter a valid email address.";
+  if (!out.message) return "A sentence or two is enough to begin.";
   return out;
 }
 
